@@ -1,7 +1,7 @@
 //1
 
 function getRecursiveFibonachchi(number) {
-    if (number == 1 || number == 2) return 1;
+    if (number === 1 || number === 2) return 1;
     else return getRecursiveFibonachchi(number - 1) + getRecursiveFibonachchi(number - 2);
 }
 
@@ -61,7 +61,7 @@ function isPalindrome(str) {
         wordsSet.add(word);
     }
     console.log(wordsSet);
-    return wordsSet.size == 1;
+    return wordsSet.size === 1;
 }
 
 //3
@@ -150,9 +150,10 @@ class Circle {
 
 //4
 
-function findMinElement(array) {
-    let minElement = array[0];
-    for (let element of array) {
+function findMinElement(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
+    let minElement = arrayOfNumbers[0];
+    for (let element of arrayOfNumbers) {
         if (element < minElement) {
             minElement = element;
         }
@@ -160,14 +161,16 @@ function findMinElement(array) {
     return minElement;
 }
 
-function findRecursiveMinElement(array) {
-    if (array.length == 1) return array[0];
-    return Math.min(array[array.length - 1], findRecursiveMinElement(array.slice(0, array.length - 1)));
+function findRecursiveMinElement(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
+    if (arrayOfNumbers.length === 1) return arrayOfNumbers[0];
+    return Math.min(arrayOfNumbers[arrayOfNumbers.length - 1], findRecursiveMinElement(arrayOfNumbers.slice(0, arrayOfNumbers.length - 1)));
 }
 
-function findMaxElement(array) {
-    let maxElement = array[0];
-    for (let element of array) {
+function findMaxElement(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
+    let maxElement = arrayOfNumbers[0];
+    for (let element of arrayOfNumbers) {
         if (element > maxElement) {
             maxElement = element;
         }
@@ -175,30 +178,33 @@ function findMaxElement(array) {
     return maxElement;
 }
 
-function findRecursiveMaxElement(array) {
-    if (array.length == 1) return array[0];
-    return Math.max(array[array.length - 1], findRecursiveMaxElement(array.slice(0, array.length - 1)));
+function findRecursiveMaxElement(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
+    if (arrayOfNumbers.length === 1) return arrayOfNumbers[0];
+    return Math.max(arrayOfNumbers[arrayOfNumbers.length - 1], findRecursiveMaxElement(arrayOfNumbers.slice(0, arrayOfNumbers.length - 1)));
 }
 
-function countZeroElements(array) {
+function countZeroElements(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
     let counter = 0;
-    for (let element of array) {
-        if (element == 0) {
+    for (let element of arrayOfNumbers) {
+        if (element === 0) {
             counter++;
         }
     }
     return counter;
 }
 
-function countRecursiveZeroElements(array) {
-    if (array.length == 0) return 0;
-    if (array.length == 1) return +(array[0] == 0);
-    return +(array[0] == 0) + countRecursiveZeroElements(array.slice(1));
+function countRecursiveZeroElements(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
+    if (arrayOfNumbers.length === 1) return +(arrayOfNumbers[0] == 0);
+    return +(arrayOfNumbers[0] === 0) + countRecursiveZeroElements(arrayOfNumbers.slice(1));
 }
 
-function countPositiveElements(array) {
+function countPositiveElements(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
     let counter = 0;
-    for (let element of array) {
+    for (let element of arrayOfNumbers) {
         if (element > 0) {
             counter++;
         }
@@ -206,15 +212,16 @@ function countPositiveElements(array) {
     return counter;
 }
 
-function countRecursivePositiveElements(array) {
-    if (array.length == 0) return 0;
-    if (array.length == 1) return +(array[0] > 0);
-    return +(array[0] > 0) + countRecursivePositiveElements(array.slice(1));
+function countRecursivePositiveElements(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
+    if (arrayOfNumbers.length === 1) return +(arrayOfNumbers[0] > 0);
+    return +(arrayOfNumbers[0] > 0) + countRecursivePositiveElements(arrayOfNumbers.slice(1));
 }
 
-function countNegativeElements(array) {
+function countNegativeElements(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
     let counter = 0;
-    for (let element of array) {
+    for (let element of arrayOfNumbers) {
         if (element < 0) {
             counter++;
         }
@@ -222,17 +229,17 @@ function countNegativeElements(array) {
     return counter;
 }
 
-function countRecursiveNegativeElements(array) {
-    if (array.length == 0) return 0;
-    if (array.length == 1) return +(array[0] < 0);
-    return +(array[0] < 0) + countRecursiveNegativeElements(array.slice(1));
+function countRecursiveNegativeElements(arrayOfNumbers) {
+    if (arrayOfNumbers.length === 0) return 0;
+    if (arrayOfNumbers.length === 1) return +(arrayOfNumbers[0] < 0);
+    return +(arrayOfNumbers[0] < 0) + countRecursiveNegativeElements(arrayOfNumbers.slice(1));
 }
 
 //5
 
 function convertToBinary(number) {
     let resultNumber = "";
-    while (number != 0) {
+    while (number !== 0) {
         resultNumber += number % 2;
         number = Math.floor(number / 2);
     }
@@ -251,7 +258,7 @@ function convertToDecimal(number) {
 //6
 
 function getFactorial(number) {
-    if (number == 1) return number;
+    if (number === 1) return number;
     else return number * getFactorial(number - 1);
 }
 
@@ -268,7 +275,7 @@ class MatrixSizeError extends Error {
 
 function findSizeOfMatrix(matrix) {
     for (let i = 0; i < matrix.length - 1; i++) {
-        if (matrix[i].length != matrix[i + 1].length) return null;
+        if (matrix[i].length !== matrix[i + 1].length) return null;
     }
     return {
         length: matrix.length,
@@ -280,7 +287,7 @@ function addTwoMatrixes(firstMatrix, secondMatrix) {
     let sizeOfFirstMatrix = findSizeOfMatrix(firstMatrix);
     let sizeOfSecondMatrix = findSizeOfMatrix(secondMatrix);
     if (!sizeOfFirstMatrix || !sizeOfSecondMatrix) throw new MatrixSizeError("Matrix must have the same size for each row!");
-    if (sizeOfFirstMatrix.length != sizeOfSecondMatrix.length || sizeOfFirstMatrix.width != sizeOfSecondMatrix.width) {
+    if (sizeOfFirstMatrix.length !== sizeOfSecondMatrix.length || sizeOfFirstMatrix.width !== sizeOfSecondMatrix.width) {
         return new MatrixSizeError("Matrixes must have the same size to add them");
     }
     let length = sizeOfFirstMatrix.length;
@@ -343,7 +350,7 @@ function calculateZeroElementsAboveMainDiagonal(matrix) {
     let width = findSizeOfMatrix(matrix).width;
     for (let i = 0; i < matrix.length; i++) {
         for (let j = i + 1; j < width; j++) {
-            zeroElements += matrix[i][j] == 0;
+            zeroElements += matrix[i][j] === 0;
         }
     }
     return zeroElements;
@@ -355,7 +362,7 @@ function calculateZeroElementsBelowMainDiagonal(matrix) {
     let width = findSizeOfMatrix(matrix).width;
     for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < i; j++) {
-            zeroElements += matrix[i][j] == 0;
+            zeroElements += matrix[i][j] === 0;
         }
     }
     return zeroElements;
