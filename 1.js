@@ -1,18 +1,26 @@
 //1
 
 function getRecursiveFibonachchi(number) {
-    if (number === 1 || number === 2) return 1;
-    else return getRecursiveFibonachchi(number - 1) + getRecursiveFibonachchi(number - 2);
+    if (typeof number !== 'number') {
+        throw new TypeError("It is not a number");
+    }
+    if (number === 1 || number === 2) {
+        return 1;
+    }
+    return getRecursiveFibonachchi(number - 1) + getRecursiveFibonachchi(number - 2);
 }
 
 function cachingDecorator(someFunction) {
+    if (typeof someFunction !== 'function') {
+        throw new TypeError("It is not a function");
+    }
     let cache = [];
-    return function(x) {
-        if (x in cache) {
-            return cache[x];
+    return function(functionArguments) {
+        if (functionArguments in cache) {
+            return cache[functionArguments];
         }
-        let result = someFunction.call(this, x);
-        cache[x] = result;
+        let result = someFunction.call(this, functionArguments);
+        cache[functionArguments] = result;
         return result;
     };
 }
@@ -52,23 +60,54 @@ let fibonachchiRange = {
 };
 
 //2
-
+/*
 function isPalindrome(str) {
+    if (typeof str !== 'string') {
+        throw new TypeError("It is not a string");
+    }
     let wordsArray = str.split('-');
     let wordsSet = new Set();
     for (let word of wordsArray) {
         word = word.toLowerCase().split("").sort().join("");
         wordsSet.add(word);
     }
-    console.log(wordsSet);
     return wordsSet.size === 1;
+}*/
+
+function isPalindrome(str) {
+    if (typeof str !== 'string') {
+        throw new TypeError("It is not a string");
+    }
+    let wordsArray = [];
+    let i = 0;
+    for (let element of str) {
+        element = element.toLowerCase();
+        if (element !== '-') {
+            if (wordsArray[i] === undefined) {
+                wordsArray[i] = [];
+                wordsArray[i].push(element);
+            } else { wordsArray[i].push(element); }
+        } else {
+            i++;
+        }
+    }
+    if (wordsArray[0].length !== wordsArray[1].length) {
+        return false;
+    }
+    for (let i = 0; i < wordsArray[0].length; i++) {
+        if (!wordsArray[1].includes(wordsArray[0][i])) {
+            return false;
+        }
+        wordsArray[1].splice(wordsArray[1].indexOf(wordsArray[0][i]), 1);
+    }
+    return true;
 }
 
 //3
-class TriangleSizeError extends Error {
+class TriangleError extends Error {
     constructor(message) {
         super(message);
-        this.name = TriangleSizeError;
+        this.name = TriangleError;
     }
 }
 
@@ -77,12 +116,16 @@ function isTriangle(first, second, third) {
 }
 
 function findTrianglePerimeter(firstSide, secondSide, thirdSide) {
-    if (!isTriangle(firstSide, secondSide, thirdSide)) throw new TriangleSizeError("It is impossible to build a triangle with sides with this values");
+    if (!isTriangle(firstSide, secondSide, thirdSide)) {
+        throw new TriangleError("It is impossible to build a triangle with sides with this values");
+    }
     return firstSide + secondSide + thirdSide;
 }
 
 function findTriangleSquare(firstSide, secondSide, thirdSide) {
-    if (!isTriangle(firstSide, secondSide, thirdSide)) throw new TriangleSizeError("It is impossible to build a triangle with sides with this values");
+    if (!isTriangle(firstSide, secondSide, thirdSide)) {
+        throw new TriangleError("It is impossible to build a triangle with sides with this values");
+    }
     let halfOfPerimeter = (firstSide + secondSide + thirdSide) / 2;
     return Math.sqrt(halfOfPerimeter * (halfOfPerimeter - firstSide) * (halfOfPerimeter - secondSide) * (halfOfPerimeter - thirdSide));
 }
@@ -97,11 +140,15 @@ class Triangle {
         return this.first + this.second > this.third && this.first + this.third > this.second && this.second + this.third > this.first;
     }
     findPerimeter() {
-        if (!isTriangle()) return null;
+        if (!isTriangle()) {
+            return null;
+        }
         return thus.first + this.second + this.third;
     }
     findSquare() {
-        if (!isTriangle()) return null;
+        if (!isTriangle()) {
+            return null;
+        }
         let halfOfPerimeter = (this.first + this.second + this.third) / 2;
         return Math.sqrt(halfOfPerimeter * (halfOfPerimeter - this.first) * (halfOfPerimeter - this.second) * (halfOfPerimeter - this.third));
     }
@@ -150,10 +197,26 @@ class Circle {
 
 //4
 
-function findMinElement(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
-    let minElement = arrayOfNumbers[0];
-    for (let element of arrayOfNumbers) {
+function findSomeElement(numbers, callback) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    let selectedElement = numbers[0];
+    for (let element of numbers) {
+        if (callback(element, selectedElement)) {
+            selectedElement = element;
+        }
+    }
+    return selectedElement;
+}
+
+/*
+function findMinElement(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    let minElement = numbers[0];
+    for (let element of numbers) {
         if (element < minElement) {
             minElement = element;
         }
@@ -161,33 +224,70 @@ function findMinElement(arrayOfNumbers) {
     return minElement;
 }
 
-function findRecursiveMinElement(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
-    if (arrayOfNumbers.length === 1) return arrayOfNumbers[0];
-    return Math.min(arrayOfNumbers[arrayOfNumbers.length - 1], findRecursiveMinElement(arrayOfNumbers.slice(0, arrayOfNumbers.length - 1)));
-}
-
-function findMaxElement(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
-    let maxElement = arrayOfNumbers[0];
-    for (let element of arrayOfNumbers) {
+function findMaxElement(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    let maxElement = numbers[0];
+    for (let element of numbers) {
         if (element > maxElement) {
             maxElement = element;
         }
     }
     return maxElement;
 }
+*/
 
-function findRecursiveMaxElement(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
-    if (arrayOfNumbers.length === 1) return arrayOfNumbers[0];
-    return Math.max(arrayOfNumbers[arrayOfNumbers.length - 1], findRecursiveMaxElement(arrayOfNumbers.slice(0, arrayOfNumbers.length - 1)));
+function findRecursiveMinElement(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    if (numbers.length === 1) {
+        return numbers[0];
+    }
+    return Math.min(numbers[numbers.length - 1], findRecursiveMinElement(numbers.slice(0, numbers.length - 1)));
 }
 
-function countZeroElements(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
+function findRecursiveMaxElement(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    if (numbers.length === 1) {
+        return numbers[0];
+    }
+    return Math.max(numbers[numbers.length - 1], findRecursiveMaxElement(numbers.slice(0, numbers.length - 1)));
+}
+
+function countSomeElements(numbers, callback) {
+    if (numbers.length === 0) {
+        return 0;
+    }
     let counter = 0;
-    for (let element of arrayOfNumbers) {
+    for (let element of numbers) {
+        if (callback(element)) {
+            counter++;
+        }
+    }
+    return counter;
+}
+
+function countRecursiveSomeElements(numbers, callback) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    if (numbers.length === 1) {
+        return +(callback(numbers[0]));
+    }
+    return +(callback(numbers[0])) + countRecursiveSomeElements(numbers.slice(1));
+}
+
+/*
+function countZeroElements(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    let counter = 0;
+    for (let element of numbers) {
         if (element === 0) {
             counter++;
         }
@@ -195,16 +295,22 @@ function countZeroElements(arrayOfNumbers) {
     return counter;
 }
 
-function countRecursiveZeroElements(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
-    if (arrayOfNumbers.length === 1) return +(arrayOfNumbers[0] == 0);
-    return +(arrayOfNumbers[0] === 0) + countRecursiveZeroElements(arrayOfNumbers.slice(1));
+function countRecursiveZeroElements(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    if (numbers.length === 1) {
+        return +(numbers[0] == 0);
+    }
+    return +(numbers[0] === 0) + countRecursiveZeroElements(numbers.slice(1));
 }
 
-function countPositiveElements(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
+function countPositiveElements(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
     let counter = 0;
-    for (let element of arrayOfNumbers) {
+    for (let element of numbers) {
         if (element > 0) {
             counter++;
         }
@@ -212,16 +318,22 @@ function countPositiveElements(arrayOfNumbers) {
     return counter;
 }
 
-function countRecursivePositiveElements(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
-    if (arrayOfNumbers.length === 1) return +(arrayOfNumbers[0] > 0);
-    return +(arrayOfNumbers[0] > 0) + countRecursivePositiveElements(arrayOfNumbers.slice(1));
+function countRecursivePositiveElements(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    if (numbers.length === 1) {
+        return +(numbers[0] > 0);
+    }
+    return +(numbers[0] > 0) + countRecursivePositiveElements(numbers.slice(1));
 }
 
-function countNegativeElements(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
+function countNegativeElements(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
     let counter = 0;
-    for (let element of arrayOfNumbers) {
+    for (let element of numbers) {
         if (element < 0) {
             counter++;
         }
@@ -229,11 +341,16 @@ function countNegativeElements(arrayOfNumbers) {
     return counter;
 }
 
-function countRecursiveNegativeElements(arrayOfNumbers) {
-    if (arrayOfNumbers.length === 0) return 0;
-    if (arrayOfNumbers.length === 1) return +(arrayOfNumbers[0] < 0);
-    return +(arrayOfNumbers[0] < 0) + countRecursiveNegativeElements(arrayOfNumbers.slice(1));
+function countRecursiveNegativeElements(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    if (numbers.length === 1) {
+        return +(numbers[0] < 0);
+    }
+    return +(numbers[0] < 0) + countRecursiveNegativeElements(numbers.slice(1));
 }
+*/
 
 //5
 
@@ -258,8 +375,10 @@ function convertToDecimal(number) {
 //6
 
 function getFactorial(number) {
-    if (number === 1) return number;
-    else return number * getFactorial(number - 1);
+    if (number === 1) {
+        return number;
+    }
+    return number * getFactorial(number - 1);
 }
 
 let getMemoizedFactorial = cachingDecorator(getFactorial);
@@ -275,7 +394,9 @@ class MatrixSizeError extends Error {
 
 function findSizeOfMatrix(matrix) {
     for (let i = 0; i < matrix.length - 1; i++) {
-        if (matrix[i].length !== matrix[i + 1].length) return null;
+        if (matrix[i].length !== matrix[i + 1].length) {
+            return null;
+        }
     }
     return {
         length: matrix.length,
@@ -286,13 +407,14 @@ function findSizeOfMatrix(matrix) {
 function addTwoMatrixes(firstMatrix, secondMatrix) {
     let sizeOfFirstMatrix = findSizeOfMatrix(firstMatrix);
     let sizeOfSecondMatrix = findSizeOfMatrix(secondMatrix);
-    if (!sizeOfFirstMatrix || !sizeOfSecondMatrix) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!sizeOfFirstMatrix || !sizeOfSecondMatrix) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     if (sizeOfFirstMatrix.length !== sizeOfSecondMatrix.length || sizeOfFirstMatrix.width !== sizeOfSecondMatrix.width) {
         return new MatrixSizeError("Matrixes must have the same size to add them");
     }
     let length = sizeOfFirstMatrix.length;
     let width = sizeOfFirstMatrix.width;
-    console.log(length + ', ' + width);
     let resultMatrix = [];
     for (let i = 0; i < length; i++) {
         let row = [];
@@ -305,7 +427,9 @@ function addTwoMatrixes(firstMatrix, secondMatrix) {
 }
 
 function transposeMatrix(matrix) {
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     let width = findSizeOfMatrix(matrix).width;
     let resultMatrix = [];
     for (let i = 0; i < matrix.length; i++) {
@@ -320,9 +444,44 @@ function transposeMatrix(matrix) {
 
 //8
 
+function calculateSmthAboveMainDiagonal(matrix, callback) {
+    let finalValue = 0;
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
+    let width = findSizeOfMatrix(matrix).width;
+    let elementsAboveMainDiagonal = [];
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = i + 1; j < width; j++) {
+            elementsAboveMainDiagonal.push(matrix[i][j]);
+        }
+    }
+    finalValue = elementsAboveMainDiagonal.customReduce(callback);
+    return finalValue;
+}
+
+function calculateSmthBelowMainDiagonal(matrix, callback) {
+    let finalValue = 0;
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
+    let width = findSizeOfMatrix(matrix).width;
+    let elementsBelowMainDiagonal = [];
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < i; j++) {
+            elementsBelowMainDiagonal.push(matrix[i][j]);
+        }
+    }
+    finalValue = elementsBelowMainDiagonal.customReduce(callback);
+    return finalValue;
+}
+
+/*
 function calculateSumOfElementsAboveMainDiagonal(matrix) {
     let sumOfElements = 0;
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     let width = findSizeOfMatrix(matrix).width;
     for (let i = 0; i < matrix.length; i++) {
         for (let j = i + 1; j < width; j++) {
@@ -334,7 +493,9 @@ function calculateSumOfElementsAboveMainDiagonal(matrix) {
 
 function calculateSumOfElementsBelowMainDiagonal(matrix) {
     let sumOfElements = 0;
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     let width = findSizeOfMatrix(matrix).width;
     for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < i; j++) {
@@ -346,7 +507,9 @@ function calculateSumOfElementsBelowMainDiagonal(matrix) {
 
 function calculateZeroElementsAboveMainDiagonal(matrix) {
     let zeroElements = 0;
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     let width = findSizeOfMatrix(matrix).width;
     for (let i = 0; i < matrix.length; i++) {
         for (let j = i + 1; j < width; j++) {
@@ -358,7 +521,9 @@ function calculateZeroElementsAboveMainDiagonal(matrix) {
 
 function calculateZeroElementsBelowMainDiagonal(matrix) {
     let zeroElements = 0;
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     let width = findSizeOfMatrix(matrix).width;
     for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < i; j++) {
@@ -370,7 +535,9 @@ function calculateZeroElementsBelowMainDiagonal(matrix) {
 
 function calculateAverageValueAboveMainDiagonal(matrix) {
     let sumOfElements = 0;
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     let width = findSizeOfMatrix(matrix).width;
     let numberOfElements = 0;
     for (let i = 0; i < matrix.length; i++) {
@@ -384,7 +551,9 @@ function calculateAverageValueAboveMainDiagonal(matrix) {
 
 function calculateAverageValueBelowMainDiagonal(matrix) {
     let sumOfElements = 0;
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     let width = findSizeOfMatrix(matrix).width;
     let numberOfElements = 0;
     for (let i = 0; i < matrix.length; i++) {
@@ -395,22 +564,31 @@ function calculateAverageValueBelowMainDiagonal(matrix) {
     }
     return sumOfElements / numberOfElements;
 }
+*/
 
 //9
 
 function deleteRowsWithZeroElements(matrix) {
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     for (let row of matrix) {
-        if (row.includes(0)) matrix.splice(matrix.indexOf(row), 1);
+        if (row.includes(0)) {
+            matrix.splice(matrix.indexOf(row), 1);
+        }
     }
     return matrix;
 }
 
 function deleteColumnsWithZeroElements(matrix) {
-    if (!findSizeOfMatrix(matrix)) throw new MatrixSizeError("Matrix must have the same size for each row!");
+    if (!findSizeOfMatrix(matrix)) {
+        throw new MatrixSizeError("Matrix must have the same size for each row!");
+    }
     let indexesOfColumnsWithZeroes = new Set();
     for (let row of matrix) {
-        if (row.includes(0)) indexesOfColumnsWithZeroes.add(row.indexOf(0));
+        if (row.includes(0)) {
+            indexesOfColumnsWithZeroes.add(row.indexOf(0));
+        }
     }
     for (let index of indexesOfColumnsWithZeroes) {
         for (let row of matrix) {
@@ -427,7 +605,7 @@ Function.prototype.customBind = function(context, ...args) {
     context[funcSymbol] = this;
     return function(...args2) {
         let result = context[funcSymbol](...args, ...args2);
-        context[funcSymbol] = null;
+        delete context[funcSymbol];
         return result;
     }
 };
